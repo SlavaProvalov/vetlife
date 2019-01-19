@@ -1,38 +1,31 @@
 package com.source.model.entity;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
-import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import static javax.persistence.CascadeType.*;
 
 @Entity
 @Table(name = "user")
-public class User implements Serializable {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
 
-    // TODO @Value from .properties file
-
-    @NotNull(message = "is required")
-    @Size(min = 7, max = 16)
-    @Pattern(regexp = "^[A-Za-z0-9]+$", message = "no-no-no")
     @Column(name = "login")
     private String login;
 
-    @NotNull(message = "is required")
-    @Size(min = 6, max = 20)
-    @Pattern(regexp = "^[A-Za-z\u0410-\u042F\u0430-\u044F\u0401\u04510-9_\\-]+$",message = "bad boy")
     @Column(name = "password")
     private String password;
 
-    @Column(name = "role")
-    private String role;
+    @ManyToMany(fetch = FetchType.LAZY, cascade = ALL)
+    @JoinTable(name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Collection<Role> roles;
 
     @OneToOne(mappedBy = "user", fetch = FetchType.EAGER, cascade = {PERSIST, MERGE, DETACH, REFRESH})
     private Client client;
@@ -64,20 +57,27 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
     public Client getClient() {
         return client;
     }
 
     public void setClient(Client client) {
         this.client = client;
+    }
+
+    public Collection<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Collection<Role> roles) {
+        this.roles = roles;
+    }
+
+    public void addRole(Role role) {
+        if (this.roles == null) {
+            this.roles = new ArrayList<>();
+        }
+        this.roles.add(role);
     }
 
     @Override
@@ -89,7 +89,6 @@ public class User implements Serializable {
 
         if (getId() != user.getId()) return false;
         if (getLogin() != null ? !getLogin().equals(user.getLogin()) : user.getLogin() != null) return false;
-        if (getRole() != null ? !getRole().equals(user.getRole()) : user.getRole() != null) return false;
         return getClient() != null ? getClient().equals(user.getClient()) : user.getClient() == null;
 
     }
@@ -98,7 +97,6 @@ public class User implements Serializable {
     public int hashCode() {
         int result = getId();
         result = 31 * result + (getLogin() != null ? getLogin().hashCode() : 0);
-        result = 31 * result + (getRole() != null ? getRole().hashCode() : 0);
         result = 31 * result + (getClient() != null ? getClient().hashCode() : 0);
         return result;
     }

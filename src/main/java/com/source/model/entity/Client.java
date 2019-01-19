@@ -15,7 +15,7 @@ import static javax.persistence.CascadeType.*;
 @Indexed
 public class Client {
 
-    // TODO @Value from .properties file
+    // TODO @Value from .lang file
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

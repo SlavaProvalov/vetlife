@@ -1,10 +1,12 @@
 package com.source.model.service;
 
 import com.source.model.entity.User;
+import com.source.model.user.CrmUser;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
-import java.util.Optional;
+public interface UserService extends UserDetailsService {
 
-public interface UserService extends GenericService<User> {
+    User findByUserName(String userName);
 
-    Optional<User> getByLoginAndPassword(String login, String password);
+    void save(CrmUser crmUser);
 }

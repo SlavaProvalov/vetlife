@@ -10,6 +10,8 @@ public interface GenericDAO<T> {
 
     void saveOrUpdate(T item);
 
+    void save(T item);
+
     void delete(T item);
 
     Optional<T> get(Class<T> item, int id);
@@ -28,6 +30,8 @@ public interface GenericDAO<T> {
         return Optional.of(sessionFactory.getCurrentSession().get(item, id));
     }
 
-
+    default void save(SessionFactory sessionFactory, T item) {
+        sessionFactory.getCurrentSession().save(item);
+    }
 
 }

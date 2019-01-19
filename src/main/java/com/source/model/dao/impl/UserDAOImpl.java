@@ -2,7 +2,9 @@ package com.source.model.dao.impl;
 
 import com.source.model.dao.UserDAO;
 import com.source.model.entity.User;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -21,6 +23,12 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
+    public void save(User item) {
+        save(sessionFactory, item);
+    }
+
+
+    @Override
     public void delete(User item) {
         delete(sessionFactory, item);
     }
@@ -37,11 +45,17 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public Optional<User> getByLoginAndPassword(String login, String password) {
-        return Optional.ofNullable(sessionFactory.getCurrentSession()
-                .createQuery("from User u where lower(u.login)=:log and u.password =:pass", User.class)
-                .setParameter("log", login.toLowerCase())
-                .setParameter("pass", password)
-                .getResultList().stream().findFirst().orElse(null));
+    public User findByUserName(String userName) {
+        Session session = sessionFactory.getCurrentSession();
+
+        Query<User> query = session.createQuery("from User where login=:uName", User.class);
+        query.setParameter("uName", userName);
+        User user;
+        try {
+            user = query.getSingleResult();
+        } catch (Exception e) {
+            user = null;
+        }
+        return user;
     }
 }

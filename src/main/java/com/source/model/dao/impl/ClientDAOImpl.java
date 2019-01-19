@@ -24,6 +24,11 @@ public class ClientDAOImpl implements ClientDAO {
     }
 
     @Override
+    public void save(Client item) {
+        save(sessionFactory, item);
+    }
+
+    @Override
     public void delete(Client item) {
         delete(sessionFactory, item);
     }
